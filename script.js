@@ -15,8 +15,8 @@ class Produkt{
 
 
 
-productList.push(new Produkt("Gilde", 3, 1));
-productList.push(new Produkt("Weizen", 4.5, 2));
+productList.push(new Produkt("Gilde", 3.5, 1));
+productList.push(new Produkt("Weizen", 5, 2));
 productList.push(new Produkt("AfG", 2.5, 1));
 productList.push(new Produkt("Kurze", 2, 0));
 productList.push(new Produkt("Prosecco", 2.5, 1));
