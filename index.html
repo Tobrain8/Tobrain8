@@ -9,9 +9,25 @@
 </head>
 
 <body>
-  <br>
-  <br>
-  <div id="productDiv">  
+  <div id="pfandSwitchDiv"> 
+    <div>
+      <span>Auto Pfand</span>
+      <label class="switch">
+        <input id="pfandSwitch" checked="true" type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  
+    <div>
+      <span style="margin-left: 10px;">Vibration</span>
+      <label class="switch">
+        <input id="vibSwitch" checked="true" type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+    
+  </div>
+  <div id="productButtonContainer">
     
   </div>
   <br>
@@ -19,22 +35,9 @@
   <table id="kassenTabelle" width=100%>
     
   </table>
-  <div>
+  <div class="newOrderButtonContainer">
   <button onclick="reset()" id="reset">Reset</button>
-  </div>
-  <div id="pfandSwitchDiv"> 
-    <span>Auto Pfand</span>
-    <label class="switch">
-      <input id="pfandSwitch" checked="true" type="checkbox">
-      <span class="slider round"></span>
-    </label>
-
-    <span style="margin-left: 10px;">Vibration</span>
-    <label class="switch">
-      <input id="vibSwitch" checked="true" type="checkbox">
-      <span class="slider round"></span>
-    </label>
-    
+  <button onclick="checkout()" id="checkout">Checkout</button>
   </div>
   <script src="script.js"></script>
 </body>

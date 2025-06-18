@@ -1,4 +1,5 @@
-const produktListe = [];
+var productListe = [];
+var historyProductList = [];
 
 class Produkt{
   constructor(name, price, pfand, background = "lightgreen"){
@@ -12,14 +13,15 @@ class Produkt{
 
 
 
-produktListe.push(new Produkt("Gilde", 3, 1));
-produktListe.push(new Produkt("Weizen", 4.5, 2));
-produktListe.push(new Produkt("AfG", 2.5, 1));
-produktListe.push(new Produkt("Kurze", 2, 0));
-produktListe.push(new Produkt("Prosecco", 2.5, 1));
-produktListe.push(new Produkt("Mische", 3, 1));
-produktListe.push(new Produkt("Glas", 1, 0, "lightgrey"));//{Pfand muss in dieser Reihenfolge an 
-produktListe.push(new Produkt("-Pfand", -1, 0, "#ff9428"));//}den letzten 2 pos. des arrays bleiben.
+productListe.push(new Produkt("Gilde", 3, 1));
+productListe.push(new Produkt("Weizen", 4.5, 2));
+productListe.push(new Produkt("AfG", 2.5, 1));
+productListe.push(new Produkt("Kurze", 2, 0));
+productListe.push(new Produkt("Prosecco", 2.5, 1));
+productListe.push(new Produkt("Mische", 3, 1));
+productListe.push(new Produkt("Glas", 1, 0, "lightgrey"));//{Pfand muss in dieser Reihenfolge an 
+productListe.push(new Produkt("-Pfand", -1, 0, "#ff9428"));//}den letzten 2 pos. des arrays bleiben.
+
 
 function main(){
   addProduktButtons()
@@ -28,22 +30,16 @@ function main(){
 
 
 function addProduktButtons(){
-  let div = document.getElementById("productDiv");
-  let addBreak = false;
-  produktListe.forEach((produkt)=>{
+  let productButtonContainer = document.getElementById("productButtonContainer");
+
+  productListe.forEach((produkt)=>{
     let button = document.createElement("button");
     button.classList.add("produkte");
     button.innerHTML = produkt.name + " (" + produkt.price + "€)";
     button.onclick = ()=>{addProdukt(produkt)}
     button.style.backgroundColor = produkt.background;
     
-    div.appendChild(button);
-
-    if(addBreak){
-      let br = document.createElement("br");
-      div.appendChild(br);
-    }
-    addBreak = !addBreak;
+    productButtonContainer.appendChild(button);
   })
 }
 
@@ -51,7 +47,7 @@ function addProdukt(produkt){
   produkt.amount++;
   if(document.getElementById("pfandSwitch").checked){
     for(let i = 0; i < produkt.pfand; i++){
-      addProdukt(produktListe[produktListe.length-2])
+      addProdukt(productListe[productListe.length-2])
     }
   }
   kassenTabelle.innerHTML = "";
@@ -59,22 +55,22 @@ function addProdukt(produkt){
   vibrate(70)
 }
 
-function getTitelzeile(){
-  let titelzeile = document.createElement("tr");
-  titelzeile.id = "titelzeile"
-  let titel = ["Produkt", "Preis", "Anzahl", "", "Summe"]
+function getTitelRow(){
+  let titelRow = document.createElement("tr");
+  titelRow.id = "titelzeile"
+  let titels = ["Produkt", "Preis", "Anzahl", "", "Summe"]
   i = 1;
-  titel.forEach(e => {
+  titels.forEach(e => {
     let th = document.createElement("th");
-    if(i==1){
-      th.id = "name"
+    if(i == 1){
+      th.id = "productName"
       i++
     }
     th.innerHTML = e;
     th.classList.add("titel")
-    titelzeile.appendChild(th);
+    titelRow.appendChild(th);
   })
-  return titelzeile
+  return titelRow
 }
 
 function getTotalzeile(total){
@@ -91,7 +87,7 @@ function getTotalzeile(total){
 
 function getProduktzeilen(){
   let produktzeilen = [];
-  produktListe.forEach((produkt)=>{
+  productListe.forEach((produkt)=>{
     if(produkt.amount == 0)return;
     let zeile = document.createElement("tr");
     zeile.id = produkt.name;
@@ -127,7 +123,7 @@ function getProduktzeilen(){
 function kassenTabelleErstellen() {
   let kassenTabelle = document.getElementById("kassenTabelle");
   let total = 0
-  kassenTabelle.appendChild(getTitelzeile());
+  kassenTabelle.appendChild(getTitelRow());
 
   let produktzeilen = getProduktzeilen();
   produktzeilen.forEach(zeile => {
@@ -141,12 +137,17 @@ function kassenTabelleErstellen() {
 
 function reset(){
   let kassenTabelle = document.getElementById("kassenTabelle");
-  produktListe.forEach((produkt)=>{
+  productListe.forEach((produkt)=>{
     produkt.amount = 0;
   })
   kassenTabelle.innerHTML = "";
   kassenTabelleErstellen();
   vibrate(200)
+}
+
+function checkout() {
+  historyProductList.push(productListe);
+  reset()
 }
 
 function vibrate(ms){
