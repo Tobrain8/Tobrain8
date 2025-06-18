@@ -9,9 +9,25 @@
 </head>
 
 <body>
-  <br>
-  <br>
-  <div id="productDiv">  
+  <div id="pfandSwitchDiv"> 
+    <div>
+      <span>Auto Pfand</span>
+      <label class="switch">
+        <input id="pfandSwitch" checked="true" type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+  
+    <div>
+      <span style="margin-left: 10px;">Vibration</span>
+      <label class="switch">
+        <input id="vibSwitch" checked="true" type="checkbox">
+        <span class="slider round"></span>
+      </label>
+    </div>
+    
+  </div>
+  <div id="productButtonContainer">
     
   </div>
   <br>
@@ -19,23 +35,16 @@
   <table id="kassenTabelle" width=100%>
     
   </table>
-  <div>
+  <div class="newOrderButtonContainer">
   <button onclick="reset()" id="reset">Reset</button>
+  <button onclick="checkout()" id="checkout">Checkout</button>
   </div>
-  <div id="pfandSwitchDiv"> 
-    <span>Auto Pfand</span>
-    <label class="switch">
-      <input id="pfandSwitch" checked="true" type="checkbox">
-      <span class="slider round"></span>
-    </label>
+  <hr>
+  <h2>History</h2>
+  <div class="orderHistoryContainer">
 
-    <span style="margin-left: 10px;">Vibration</span>
-    <label class="switch">
-      <input id="vibSwitch" checked="true" type="checkbox">
-      <span class="slider round"></span>
-    </label>
-    
   </div>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="script.js"></script>
 </body>
 

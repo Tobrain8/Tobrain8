@@ -1,57 +1,62 @@
-const produktListe = [];
+var productList = [];
+var orderHistory = [];
+const nameOfOrderHistoryInLocalStorage = "orderHistory";
+var loadedOrderFromHistoryHasChanged = true;
 
 class Produkt{
   constructor(name, price, pfand, background = "lightgreen"){
     this.name = name;
+    this.amount = 0;
     this.price = price;
     this.pfand = pfand;
-    this.amount = 0;
     this.background = background;
   }
 }
 
 
 
-produktListe.push(new Produkt("Gilde", 3, 1));
-produktListe.push(new Produkt("Weizen", 4.5, 2));
-produktListe.push(new Produkt("AfG", 2.5, 1));
-produktListe.push(new Produkt("Kurze", 2, 0));
-produktListe.push(new Produkt("Prosecco", 2.5, 1));
-produktListe.push(new Produkt("Mische", 3, 1));
-produktListe.push(new Produkt("Glas", 1, 0, "lightgrey"));//{Pfand muss in dieser Reihenfolge an 
-produktListe.push(new Produkt("-Pfand", -1, 0, "#ff9428"));//}den letzten 2 pos. des arrays bleiben.
+productList.push(new Produkt("Gilde", 3.5, 1));
+productList.push(new Produkt("Weizen", 5, 2));
+productList.push(new Produkt("AfG", 2.5, 1));
+productList.push(new Produkt("Kurze", 2, 0));
+productList.push(new Produkt("Prosecco", 2.5, 1));
+productList.push(new Produkt("Mische", 3, 1));
+productList.push(new Produkt("Glas", 1, 0, "lightgrey"));//{Pfand muss in dieser Reihenfolge an 
+productList.push(new Produkt("-Pfand", -1, 0, "#ff9428"));//}den letzten 2 pos. des arrays bleiben.
+
 
 function main(){
+  orderHistory = fetchOrderHistory()
   addProduktButtons()
   kassenTabelleErstellen();
+  refreshAndShowHistory();
 }
 
+function fetchOrderHistory() {
+  let localStorageContent = localStorage.getItem(nameOfOrderHistoryInLocalStorage);
+  return localStorageContent ? JSON.parse(localStorageContent) : [];
+}
 
 function addProduktButtons(){
-  let div = document.getElementById("productDiv");
-  let addBreak = false;
-  produktListe.forEach((produkt)=>{
+  let productButtonContainer = document.getElementById("productButtonContainer");
+  productButtonContainer.innerHTML = "";
+  productList.forEach((produkt)=>{
     let button = document.createElement("button");
     button.classList.add("produkte");
     button.innerHTML = produkt.name + " (" + produkt.price + "€)";
     button.onclick = ()=>{addProdukt(produkt)}
     button.style.backgroundColor = produkt.background;
     
-    div.appendChild(button);
-
-    if(addBreak){
-      let br = document.createElement("br");
-      div.appendChild(br);
-    }
-    addBreak = !addBreak;
+    productButtonContainer.appendChild(button);
   })
 }
 
-function addProdukt(produkt){
+function addProdukt(produkt){ debugger
+  loadedOrderFromHistoryHasChanged = true;
   produkt.amount++;
   if(document.getElementById("pfandSwitch").checked){
     for(let i = 0; i < produkt.pfand; i++){
-      addProdukt(produktListe[produktListe.length-2])
+      addProdukt(productList[productList.length-2])
     }
   }
   kassenTabelle.innerHTML = "";
@@ -59,22 +64,22 @@ function addProdukt(produkt){
   vibrate(70)
 }
 
-function getTitelzeile(){
-  let titelzeile = document.createElement("tr");
-  titelzeile.id = "titelzeile"
-  let titel = ["Produkt", "Preis", "Anzahl", "", "Summe"]
-  i = 1;
-  titel.forEach(e => {
+function getTitelRow(){
+  let titelRow = document.createElement("tr");
+  titelRow.id = "titelzeile"
+  let titels = ["Produkt", "Preis", "Anzahl", "", "Summe"]
+  let i = 1;
+  titels.forEach(e => {
     let th = document.createElement("th");
-    if(i==1){
-      th.id = "name"
+    if(i == 1){
+      th.id = "productName"
       i++
     }
     th.innerHTML = e;
     th.classList.add("titel")
-    titelzeile.appendChild(th);
+    titelRow.appendChild(th);
   })
-  return titelzeile
+  return titelRow
 }
 
 function getTotalzeile(total){
@@ -91,7 +96,7 @@ function getTotalzeile(total){
 
 function getProduktzeilen(){
   let produktzeilen = [];
-  produktListe.forEach((produkt)=>{
+  productList.forEach((produkt)=>{
     if(produkt.amount == 0)return;
     let zeile = document.createElement("tr");
     zeile.id = produkt.name;
@@ -125,23 +130,23 @@ function getProduktzeilen(){
 }
 
 function kassenTabelleErstellen() {
-  let kassenTabelle = document.getElementById("kassenTabelle");
+  let kassenTabelle = $("#kassenTabelle");
+  kassenTabelle.empty();
   let total = 0
-  kassenTabelle.appendChild(getTitelzeile());
+  kassenTabelle.append(getTitelRow());
 
   let produktzeilen = getProduktzeilen();
   produktzeilen.forEach(zeile => {
     total += Number(zeile.lastChild.innerHTML.slice(0, -1))
-    kassenTabelle.appendChild(zeile)
+    kassenTabelle.append(zeile)
   });
   
-  kassenTabelle.appendChild(getTotalzeile(total.toFixed(2)));
-  
+  kassenTabelle.append(getTotalzeile(total.toFixed(2)));
 }
 
 function reset(){
   let kassenTabelle = document.getElementById("kassenTabelle");
-  produktListe.forEach((produkt)=>{
+  productList.forEach((produkt)=>{
     produkt.amount = 0;
   })
   kassenTabelle.innerHTML = "";
@@ -149,9 +154,68 @@ function reset(){
   vibrate(200)
 }
 
+function checkout() {
+  if(isOrderEmpty())
+    return;
+  safeProductListToOrderHistory()
+  reset();
+  refreshAndShowHistory();
+}
+
+function isOrderEmpty() {
+  let isEmpty = true;
+  productList.forEach((product) => {
+    if(product.amount > 0)
+      isEmpty = false;
+  })
+  return isEmpty;
+}
+
+function safeProductListToOrderHistory() {debugger
+  if(!loadedOrderFromHistoryHasChanged)
+    return;
+  orderHistory.unshift(structuredClone(productList));
+  localStorage.setItem(nameOfOrderHistoryInLocalStorage, JSON.stringify(orderHistory));
+}
+
+function refreshAndShowHistory() {
+  historyDiv = $(".orderHistoryContainer").first();
+  historyDiv.empty();
+  orderHistory.forEach((order) => {
+    let button = document.createElement("button");
+    button.onclick = () => {loadOrderFromHistory(order)} 
+    button.innerHTML = "Total: " + getTotal(order) + "€";
+    button.className = "historyButton";
+    historyDiv.append(button);
+  })
+}
+
+function loadOrderFromHistory(order) { debugger
+  checkout();
+  for(let i = 0; i < productList.length; i++) {
+    productList[i].amount = order[i].amount;
+  }
+  kassenTabelleErstellen();
+  loadedOrderFromHistoryHasChanged = false;
+}
+
+function getTotal(order) {
+  let total = 0;
+  order.forEach((product) => {
+    total += product.amount * product.price;
+  })
+  return total;
+}
+
 function vibrate(ms){
   let vibe = document.getElementById("vibSwitch");
-  if(vibe.checked)navigator.vibrate(ms)
+  if(vibe.checked) {
+    try {
+      navigator.vibrate(ms);
+    } catch (error) {
+      console.log("Vibration didn't work (Can your device vibrate?): " + error.message);
+    }
+  }
 }
 
 function remove(produkt){
