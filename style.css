@@ -7,7 +7,7 @@ th{
   text-align: left;
 }
 
-h1{
+h2{
   text-align: center;
   margin-bottom: 5px;
   margin-top: 5px;
@@ -170,4 +170,12 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+.orderHistoryContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem;
 }
