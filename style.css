@@ -179,3 +179,9 @@ input:checked + .slider:before {
   gap: 0.5rem;
   margin: 1rem;
 }
+
+.clearHistoryButton {
+  margin-top: 1rem;
+  background-color: #ff5151;
+  border-radius: 0.4rem;
+}

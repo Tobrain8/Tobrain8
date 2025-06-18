@@ -2,6 +2,8 @@ var productList = [];
 var orderHistory = [];
 const nameOfOrderHistoryInLocalStorage = "orderHistory";
 var loadedOrderFromHistoryHasChanged = true;
+const SHORT_VIBRATION = 40;
+const LONG_VIBRATION = 120;
 
 class Produkt{
   constructor(name, price, pfand, background = "lightgreen"){
@@ -20,7 +22,7 @@ productList.push(new Produkt("Weizen", 5, 2));
 productList.push(new Produkt("AfG", 2.5, 1));
 productList.push(new Produkt("Kurze", 2, 0));
 productList.push(new Produkt("Prosecco", 2.5, 1));
-productList.push(new Produkt("Mische", 3, 1));
+productList.push(new Produkt("Mische", 5, 1));
 productList.push(new Produkt("Glas", 1, 0, "lightgrey"));//{Pfand muss in dieser Reihenfolge an 
 productList.push(new Produkt("-Pfand", -1, 0, "#ff9428"));//}den letzten 2 pos. des arrays bleiben.
 
@@ -61,7 +63,7 @@ function addProdukt(produkt){ debugger
   }
   kassenTabelle.innerHTML = "";
   kassenTabelleErstellen();
-  vibrate(70)
+  vibrate(SHORT_VIBRATION)
 }
 
 function getTitelRow(){
@@ -151,7 +153,7 @@ function reset(){
   })
   kassenTabelle.innerHTML = "";
   kassenTabelleErstellen();
-  vibrate(200)
+  vibrate(LONG_VIBRATION)
 }
 
 function checkout() {
@@ -188,6 +190,17 @@ function refreshAndShowHistory() {
     button.className = "historyButton";
     historyDiv.append(button);
   })
+  let clearHistoryButton = document.createElement("button")
+  clearHistoryButton.innerHTML = "Clear History";
+  clearHistoryButton.className = "clearHistoryButton"
+  clearHistoryButton.onclick = () => {
+    if(confirm("Sicher, dass der Verlauf gelöscht werden soll?")) {
+      localStorage.removeItem(nameOfOrderHistoryInLocalStorage);
+      orderHistory = [];
+      refreshAndShowHistory();
+    }
+  }
+  historyDiv.append(clearHistoryButton);
 }
 
 function loadOrderFromHistory(order) { debugger
@@ -222,7 +235,7 @@ function remove(produkt){
   produkt.amount -= 1
   kassenTabelle.innerHTML = "";
   kassenTabelleErstellen();
-  vibrate(70)
+  vibrate(SHORT_VIBRATION)
 }
 
 
