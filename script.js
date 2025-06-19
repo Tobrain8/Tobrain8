@@ -6,24 +6,23 @@ const SHORT_VIBRATION = 40;
 const LONG_VIBRATION = 120;
 
 class Produkt{
-  constructor(name, price, pfand, background = "lightgreen"){
+  constructor(name, price, pfand, deal = null, background = "lightgreen"){
     this.name = name;
     this.amount = 0;
     this.price = price;
     this.pfand = pfand;
     this.background = background;
+    this.deal = deal;
   }
 }
 
-
-
-productList.push(new Produkt("Gilde", 3.5, 1));
+productList.push(new Produkt("Gilde", 3.5, 1, deal={amount: 10, price: 30}));
 productList.push(new Produkt("Weizen", 5, 2));
 productList.push(new Produkt("AfG", 2.5, 1));
 productList.push(new Produkt("Kurze", 2, 0));
-productList.push(new Produkt("Mische", 5, 1));
-productList.push(new Produkt("Glas", 1, 0, "lightgrey"));//{Pfand muss in dieser Reihenfolge an 
-productList.push(new Produkt("-Pfand", -1, 0, "#ff9428"));//}den letzten 2 pos. des arrays bleiben.
+productList.push(new Produkt("Mische", 5, 1, deal={amount: 5, price: 20}));
+productList.push(new Produkt("Glas", 1, 0, null, background="lightgrey"));//{Pfand muss in dieser Reihenfolge an 
+productList.push(new Produkt("-Pfand", -1, 0, null, background="#ff9428"));//}den letzten 2 pos. des arrays bleiben.
 
 
 function main(){
@@ -52,7 +51,7 @@ function addProduktButtons(){
   })
 }
 
-function addProdukt(produkt){ debugger
+function addProdukt(produkt){
   loadedOrderFromHistoryHasChanged = true;
   produkt.amount++;
   if(document.getElementById("pfandSwitch").checked){
@@ -97,14 +96,14 @@ function getTotalzeile(total){
 
 function getProduktzeilen(){
   let produktzeilen = [];
-  productList.forEach((produkt)=>{
-    if(produkt.amount == 0)return;
+  productList.forEach((product)=>{
+    if(product.amount == 0)return;
     let zeile = document.createElement("tr");
-    zeile.id = produkt.name;
+    zeile.id = product.name;
     let removeButton = document.createElement("button")
     removeButton.id = "decrease"
     removeButton.innerText = "-"
-    removeButton.onclick = () => {remove(produkt)}
+    removeButton.onclick = () => {remove(product)}
 
     let zelleName = document.createElement("td");
     let zellePreis = document.createElement("td");
@@ -112,11 +111,11 @@ function getProduktzeilen(){
     let zelleDecrease = document.createElement("td");
     let zelleSumme = document.createElement("td");
 
-    zelleName.innerHTML = produkt.name
-    zellePreis.innerHTML = produkt.price + "€"
-    zelleAnzahl.innerHTML = produkt.amount
+    zelleName.innerHTML = product.name
+    zellePreis.innerHTML = product.price + "€"
+    zelleAnzahl.innerHTML = product.amount
     zelleDecrease.appendChild(removeButton)
-    zelleSumme.innerHTML = (produkt.amount * produkt.price).toFixed(2) + "€"
+    zelleSumme.innerHTML = getSumOfProduct(product).toFixed(2) + "€"
     
     zeile.appendChild(zelleName)
     zeile.appendChild(zellePreis)
@@ -172,7 +171,7 @@ function isOrderEmpty() {
   return isEmpty;
 }
 
-function safeProductListToOrderHistory() {debugger
+function safeProductListToOrderHistory() {
   if(!loadedOrderFromHistoryHasChanged)
     return;
   orderHistory.unshift(structuredClone(productList));
@@ -184,7 +183,8 @@ function refreshAndShowHistory() {
   historyDiv.empty();
   orderHistory.forEach((order) => {
     let button = document.createElement("button");
-    button.onclick = () => {loadOrderFromHistory(order)} 
+    button.onclick = () => {loadOrderFromHistory(order)}
+    debugger;
     button.innerHTML = "Total: " + getTotal(order) + "€";
     button.className = "historyButton";
     historyDiv.append(button);
@@ -202,7 +202,7 @@ function refreshAndShowHistory() {
   historyDiv.append(clearHistoryButton);
 }
 
-function loadOrderFromHistory(order) { debugger
+function loadOrderFromHistory(order) { 
   checkout();
   for(let i = 0; i < productList.length; i++) {
     productList[i].amount = order[i].amount;
@@ -211,10 +211,22 @@ function loadOrderFromHistory(order) { debugger
   loadedOrderFromHistoryHasChanged = false;
 }
 
+function getSumOfProduct(product) {
+    let amountLeft = product.amount;
+    let sum = 0;
+    if(product.deal)
+      while(amountLeft >= product.deal.amount){
+        sum += product.deal.price;
+        amountLeft -= product.deal.amount;
+      }
+    sum += amountLeft * product.price;
+    return sum;
+  }
+
 function getTotal(order) {
   let total = 0;
   order.forEach((product) => {
-    total += product.amount * product.price;
+    total += getSumOfProduct(product);
   })
   return total;
 }
