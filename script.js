@@ -21,7 +21,6 @@ productList.push(new Produkt("Gilde", 3.5, 1));
 productList.push(new Produkt("Weizen", 5, 2));
 productList.push(new Produkt("AfG", 2.5, 1));
 productList.push(new Produkt("Kurze", 2, 0));
-productList.push(new Produkt("Prosecco", 2.5, 1));
 productList.push(new Produkt("Mische", 5, 1));
 productList.push(new Produkt("Glas", 1, 0, "lightgrey"));//{Pfand muss in dieser Reihenfolge an 
 productList.push(new Produkt("-Pfand", -1, 0, "#ff9428"));//}den letzten 2 pos. des arrays bleiben.
